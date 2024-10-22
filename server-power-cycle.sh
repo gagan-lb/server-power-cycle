@@ -6,18 +6,30 @@
 # Author: Gagan Gill
 # Date: October 22, 2024
 
-# Create directory for scripts
+# Server name to work with
+SERVER_NAME="server00"
+
+# Create directory & server.name file for scripts
 mkdir -p /root/server_cycle
+echo "${SERVER_NAME}" > /root/server_cycle/server.name
 
 # Create the main cycle script
 cat > /root/server_cycle/cycle.sh << 'EOF'
 #!/bin/bash
 
+# Check for server.name file which contains server name we are working on
+if [ ! -f /root/server_cycle/server.name ]; then
+    echo "`date` error: server.name file does not exist" >> /root/server_cycle/error.txt
+    exit 1
+fi
+
+SERVER_NAME=$(cat /root/server_cycle/server.name)
+
 # If start time file doesn't exist, create it
 if [ ! -f /root/server_cycle/start_time.txt ]; then
     date +%s > /root/server_cycle/start_time.txt
     # Since this is first run, enable the server first
-    lbcli enable server --name server00
+    lbcli enable server --name "${SERVER_NAME}"
     sleep 30
 fi
 
@@ -28,7 +40,7 @@ end_time=$((start_time + 24*60*60))
 
 if [ $current_time -lt $end_time ]; then
     # Disable server
-    lbcli disable server --name server00
+    lbcli disable server --name "${SERVER_NAME}"
     
     # Wait 2 minutes
     sleep 120
@@ -42,11 +54,19 @@ EOF
 cat > /root/server_cycle/enable.sh << 'EOF'
 #!/bin/bash
 
+# Check for server.name file which contains server name we are working on
+if [ ! -f /root/server_cycle/server.name ]; then
+    echo "`date` error: server.name file does not exist" >> /root/server_cycle/error.txt
+    exit 1
+fi
+
+SERVER_NAME=$(cat /root/server_cycle/server.name)
+
 # Wait 1 second for system to stabilize
 sleep 1
 
 # Enable server
-lbcli enable server --name server00
+lbcli enable server --name "${SERVER_NAME}"
 
 # Wait for enable to complete
 sleep 30
@@ -103,7 +123,7 @@ systemctl enable server-cycle
 systemctl enable server-cycle-enable
 
 # First enable the server since it might be disabled
-lbcli enable server --name server00
+lbcli enable server --name "${SERVER_NAME}"
 sleep 30
 
 # Now start the cycle service
