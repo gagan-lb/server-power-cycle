@@ -23,7 +23,7 @@ chmod +x /root/server-power-cycle.sh
 ```
 3. Run the script:
 ```bash
-bash /root/server-power-cycle.sh
+ ./root/server-power-cycle.sh
 ```
 
 ## Cycle Process
