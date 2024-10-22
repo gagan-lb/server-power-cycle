@@ -6,7 +6,7 @@
 # Author: Gagan Gill
 # Date: October 22, 2024
 
-# Servername to Power Cycle
+# Server name to work with
 SERVER_NAME="server00"
 
 # Create directory & server.name file for scripts
@@ -19,7 +19,7 @@ cat > /root/server_cycle/cycle.sh << 'EOF'
 
 # Check for server.name file which contains server name we are working on
 if [ ! -f /root/server_cycle/server.name ]; then
-    echo "error: server.name file does not exist" > /root/server_cycle/error.txt
+    echo "`date` error: server.name file does not exist" >> /root/server_cycle/error.txt
     exit 1
 fi
 
@@ -56,7 +56,7 @@ cat > /root/server_cycle/enable.sh << 'EOF'
 
 # Check for server.name file which contains server name we are working on
 if [ ! -f /root/server_cycle/server.name ]; then
-    echo "error: server.name file does not exist" > /root/server_cycle/error.txt
+    echo "`date` error: server.name file does not exist" >> /root/server_cycle/error.txt
     exit 1
 fi
 
@@ -123,7 +123,7 @@ systemctl enable server-cycle
 systemctl enable server-cycle-enable
 
 # First enable the server since it might be disabled
-lbcli enable server --name server00
+lbcli enable server --name "${SERVER_NAME}"
 sleep 30
 
 # Now start the cycle service
